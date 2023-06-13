@@ -80,11 +80,6 @@ class _AddPostState extends State<AddPost> {
         clearImage();
         if (context.mounted) {
           showSnackBar('Posted', context);
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const Feed(),
-            ),
-          );
         }
       } else {
         setState(() {
