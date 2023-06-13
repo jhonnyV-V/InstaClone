@@ -65,30 +65,37 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
                 IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                          child: ListView(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shrinkWrap: true,
-                            children: [
-                              'Delete',
-                            ]
-                                .map((e) => InkWell(
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12, horizontal: 16),
-                                        child: Text(e),
-                                      ),
-                                      onTap: () {},
-                                    ))
-                                .toList(),
-                          ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                        child: ListView(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shrinkWrap: true,
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                Navigator.of(context).pop();
+                                await FirestoreMethods().deletePost(
+                                  widget.post.postId,
+                                  widget.post.imageUrl,
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 16,
+                                ),
+                                child: const Text('Delete'),
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.more_vert)),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.more_vert),
+                ),
               ],
             ),
           ),

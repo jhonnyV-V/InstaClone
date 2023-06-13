@@ -35,13 +35,20 @@ class _LoginState extends State<Login> {
     String res = await Auth()
         .login(email: emailController.text, password: passwordController.text);
     if (res != "success") {
-      // ignore: use_build_context_synchronously
-      showSnackBar(res, context);
+      if (context.mounted) {
+        showSnackBar(res, context);
+      }
     } else {
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
-              mobileScreen: MobileScreen(), webScreen: WebScreen())));
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreen: MobileScreen(),
+              webScreen: WebScreen(),
+            ),
+          ),
+        );
+      }
     }
     setState(() {
       _isLoading = false;

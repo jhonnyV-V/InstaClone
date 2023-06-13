@@ -56,13 +56,20 @@ class _SignUpState extends State<SignUp> {
         bio: bioController.text,
         file: _img!);
     if (res != "success") {
-      // ignore: use_build_context_synchronously
-      showSnackBar(res, context);
+      if (context.mounted) {
+        showSnackBar(res, context);
+      }
     } else {
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
-              mobileScreen: MobileScreen(), webScreen: WebScreen())));
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreen: MobileScreen(),
+              webScreen: WebScreen(),
+            ),
+          ),
+        );
+      }
     }
     setState(() {
       _loading = false;
@@ -71,7 +78,10 @@ class _SignUpState extends State<SignUp> {
 
   void login() {
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Login()));
+      MaterialPageRoute(
+        builder: (context) => const Login(),
+      ),
+    );
   }
 
   @override
