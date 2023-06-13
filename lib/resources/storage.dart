@@ -21,4 +21,16 @@ class Storage {
     String url = await snap.ref.getDownloadURL();
     return url;
   }
+
+  Future<bool> deleteImage(String imageUrl) async {
+    Reference ref = _storage.refFromURL(imageUrl);
+    bool success = true;
+    try {
+      await ref.delete();
+    } catch (e) {
+      print(e.toString());
+      success = false;
+    }
+    return success;
+  }
 }

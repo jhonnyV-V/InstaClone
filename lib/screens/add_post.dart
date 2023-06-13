@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore.dart';
+import 'package:instagram_clone/screens/feed.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -76,15 +77,22 @@ class _AddPostState extends State<AddPost> {
         setState(() {
           _isLoading = false;
         });
-        // ignore: use_build_context_synchronously
-        showSnackBar('Posted', context);
         clearImage();
+        if (context.mounted) {
+          showSnackBar('Posted', context);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const Feed(),
+            ),
+          );
+        }
       } else {
         setState(() {
           _isLoading = false;
         });
-        // ignore: use_build_context_synchronously
-        showSnackBar(res, context);
+        if (context.mounted) {
+          showSnackBar(res, context);
+        }
       }
     } catch (e) {
       setState(() {

@@ -117,4 +117,13 @@ class FirestoreMethods {
       }
     }
   }
+
+  Future<void> deletePost(String postid, String imageUrl) async {
+    try {
+      await _firestore.collection(postsCollection).doc(postid).delete();
+      await Storage().deleteImage(imageUrl);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }
