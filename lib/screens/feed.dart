@@ -34,7 +34,7 @@ class _FeedState extends State<Feed> {
         userData = await auth.getUserDetails(uid);
         uidToData[uid] = userData;
       }
-      var num = await FirebaseFirestore.instance
+      AggregateQuerySnapshot num = await FirebaseFirestore.instance
           .collection(postsCollection)
           .doc(data['postId'])
           .collection(commentCollection)
