@@ -1,15 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/screens/add_post.dart';
 import 'package:instagram_clone/screens/feed.dart';
+import 'package:instagram_clone/screens/profile.dart';
 import 'package:instagram_clone/screens/search.dart';
 
 const webScreenSize = 600;
-const homeScreenItems = [
-  Feed(),
-  Search(),
-  AddPost(),
-  Text('notifications'),
-  Text('profile'),
+List<Widget> homeScreenItems = [
+  const Feed(),
+  const Search(),
+  const AddPost(),
+  const Center(
+    child: Text('notifications'),
+  ),
+  Profile(
+    uid: FirebaseAuth.instance.currentUser!.uid,
+  ),
 ];
 const userCollection = 'users';
 const postsCollection = 'posts';
@@ -17,5 +23,5 @@ const commentCollection = 'comments';
 const postStoragePath = 'post';
 const profilePicturesPath = 'profilePictures';
 
-const defaulProfilePicture =
+const defaultProfilePicture =
     "https://www.chocolatebayou.org/wp-content/uploads/No-Image-Person-2048x2048.jpeg";

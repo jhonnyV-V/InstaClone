@@ -113,7 +113,7 @@ class _SignUpState extends State<SignUp> {
                       )
                     : const CircleAvatar(
                         radius: 64,
-                        backgroundImage: NetworkImage(defaulProfilePicture),
+                        backgroundImage: NetworkImage(defaultProfilePicture),
                       ),
                 Positioned(
                     bottom: -10,

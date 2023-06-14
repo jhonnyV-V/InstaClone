@@ -123,7 +123,9 @@ class FirestoreMethods {
       await _firestore.collection(postsCollection).doc(postid).delete();
       await Storage().deleteImage(imageUrl);
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 }

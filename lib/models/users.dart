@@ -43,7 +43,7 @@ class User {
 
   String getProfilePicture() {
     if (profilePicture.isEmpty) {
-      return defaulProfilePicture;
+      return defaultProfilePicture;
     } else {
       return profilePicture;
     }

@@ -1,6 +1,6 @@
-import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 class Storage {
@@ -28,7 +28,9 @@ class Storage {
     try {
       await ref.delete();
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
       success = false;
     }
     return success;
