@@ -129,55 +129,63 @@ class _AddPostState extends State<AddPost> {
         title: const Text('Create a post'),
         actions: [
           TextButton(
-              onPressed: _createPost,
-              child: const Text(
-                'Post',
-                style: TextStyle(
-                    color: Colors.blueAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
-              )),
-        ],
-      ),
-      body: Column(children: [
-        _isLoading ? const LinearProgressIndicator() : const SizedBox.shrink(),
-        const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(user.getProfilePicture()),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: TextField(
-                controller: description,
-                decoration: const InputDecoration(
-                    hintText: 'write a caption', border: InputBorder.none),
-                maxLines: 8,
+            onPressed: _createPost,
+            child: const Text(
+              'Post',
+              style: TextStyle(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
-            SizedBox(
-              height: 45,
-              width: 45,
-              child: AspectRatio(
-                aspectRatio: 487 / 451,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: MemoryImage(_image!),
-                      fit: BoxFit.fill,
-                      alignment: FractionalOffset.topCenter,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          _isLoading
+              ? const LinearProgressIndicator()
+              : const SizedBox.shrink(),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(user.getProfilePicture()),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: TextField(
+                  controller: description,
+                  decoration: const InputDecoration(
+                    hintText: 'write a caption',
+                    border: InputBorder.none,
+                  ),
+                  maxLines: 8,
+                ),
+              ),
+              SizedBox(
+                height: 45,
+                width: 45,
+                child: AspectRatio(
+                  aspectRatio: 487 / 451,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: MemoryImage(_image!),
+                        fit: BoxFit.fill,
+                        alignment: FractionalOffset.topCenter,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const Divider(),
-          ],
-        )
-      ]),
+              const Divider(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

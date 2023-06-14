@@ -4,7 +4,9 @@ import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore.dart';
 import 'package:instagram_clone/screens/comments.dart';
+import 'package:instagram_clone/screens/profile.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/widgets/like_animation.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +26,8 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     final model.User user = Provider.of<UserProvider>(context).getUser;
     final userLiked = widget.post.likes.contains(user.uid);
+    final width = MediaQuery.of(context).size.width;
+    final isWeb = width >= webScreenSize;
 
     void displayComments() {
       Navigator.of(context).push(
@@ -35,8 +39,16 @@ class _PostCardState extends State<PostCard> {
       );
     }
 
+    void goToUserProfile(BuildContext context) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => Profile(uid: widget.post.uid),
+        ),
+      );
+    }
+
     return Container(
-      color: mobileBackgroundColor,
+      color: isWeb ? webBackgroundColor : mobileBackgroundColor,
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         children: [
@@ -45,9 +57,12 @@ class _PostCardState extends State<PostCard> {
                 .copyWith(right: 0),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(widget.post.profilePicture),
+                InkWell(
+                  onTap: () => goToUserProfile(context),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundImage: NetworkImage(widget.post.profilePicture),
+                  ),
                 ),
                 Expanded(
                   child: Padding(
@@ -56,9 +71,12 @@ class _PostCardState extends State<PostCard> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.post.username,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        InkWell(
+                          onTap: () => goToUserProfile(context),
+                          child: Text(
+                            widget.post.username,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ],
                     ),
@@ -69,6 +87,9 @@ class _PostCardState extends State<PostCard> {
                     showDialog(
                       context: context,
                       builder: (context) => Dialog(
+                        insetPadding: EdgeInsets.symmetric(
+                          horizontal: isWeb ? width * 0.3 : 0,
+                        ),
                         child: ListView(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shrinkWrap: true,

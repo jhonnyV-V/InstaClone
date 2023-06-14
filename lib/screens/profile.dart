@@ -73,6 +73,9 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isWeb = width >= webScreenSize;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
@@ -108,17 +111,22 @@ class _ProfileState extends State<Profile> {
           : ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: isWeb ? width * 0.2 : 16,
+                  ),
                   child: Column(
                     children: [
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: NetworkImage(user != null
-                                ? user!.getProfilePicture()
-                                : defaultProfilePicture),
+                            backgroundImage: NetworkImage(
+                              user != null
+                                  ? user!.getProfilePicture()
+                                  : defaultProfilePicture,
+                            ),
                             backgroundColor: Colors.grey,
-                            radius: 40,
+                            radius: isWeb ? 64 : 40,
                           ),
                           Expanded(
                             flex: 1,
@@ -215,48 +223,53 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 const Divider(),
-                FutureBuilder(
-                  key: postKey,
-                  future: FirebaseFirestore.instance
-                      .collection(postsCollection)
-                      .where(
-                        'uid',
-                        isEqualTo: widget.uid,
-                      )
-                      .orderBy(
-                        'datePublished',
-                        descending: true,
-                      )
-                      .get(),
-                  builder: (context,
-                      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                          snapshot) {
-                    if (!snapshot.hasData) {
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data != null
-                          ? snapshot.data!.docs.length
-                          : 0,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 1.5,
-                        childAspectRatio: 1,
-                      ),
-                      itemBuilder: (context, index) {
-                        Post post = Post.fromSnap(snapshot.data!.docs[index]);
-                        return Image(
-                          image: NetworkImage(post.imageUrl),
-                          fit: BoxFit.cover,
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isWeb ? 40 : 0,
+                  ),
+                  child: FutureBuilder(
+                    key: postKey,
+                    future: FirebaseFirestore.instance
+                        .collection(postsCollection)
+                        .where(
+                          'uid',
+                          isEqualTo: widget.uid,
+                        )
+                        .orderBy(
+                          'datePublished',
+                          descending: true,
+                        )
+                        .get(),
+                    builder: (context,
+                        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                            snapshot) {
+                      if (!snapshot.hasData) {
+                        const Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                    );
-                  },
+                      }
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.data != null
+                            ? snapshot.data!.docs.length
+                            : 0,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 1.5,
+                          childAspectRatio: 1,
+                        ),
+                        itemBuilder: (context, index) {
+                          Post post = Post.fromSnap(snapshot.data!.docs[index]);
+                          return Image(
+                            image: NetworkImage(post.imageUrl),
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

@@ -90,7 +90,11 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       body: SafeArea(
           child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: MediaQuery.of(context).size.width >= webScreenSize
+            ? EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width / 3,
+              )
+            : const EdgeInsets.symmetric(horizontal: 32),
         width: MediaQuery.of(context).size.width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

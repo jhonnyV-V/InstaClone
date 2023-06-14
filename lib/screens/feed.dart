@@ -71,19 +71,26 @@ class _FeedState extends State<Feed> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isWeb = width >= webScreenSize;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: mobileBackgroundColor,
-        centerTitle: false,
-        title: SvgPicture.asset(
-          'assets/ic_instagram.svg',
-          height: 32,
-          colorFilter: const ColorFilter.mode(primaryColor, BlendMode.srcIn),
-        ),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.send_outlined))
-        ],
-      ),
+      appBar: isWeb
+          ? null
+          : AppBar(
+              backgroundColor:
+                  isWeb ? webBackgroundColor : mobileBackgroundColor,
+              centerTitle: false,
+              title: SvgPicture.asset(
+                'assets/ic_instagram.svg',
+                height: 32,
+                colorFilter:
+                    const ColorFilter.mode(primaryColor, BlendMode.srcIn),
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () {}, icon: const Icon(Icons.send_outlined))
+              ],
+            ),
       body: StreamBuilder<List<PopulatedPost>>(
         stream: stream,
         builder: (context, AsyncSnapshot<List<PopulatedPost>> snapshot) {
@@ -96,8 +103,14 @@ class _FeedState extends State<Feed> {
           }
           return ListView.builder(
             itemCount: snapshot.data != null ? snapshot.data!.length : 0,
-            itemBuilder: (context, index) => PostCard(
-              post: snapshot.data![index],
+            itemBuilder: (context, index) => Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: isWeb ? width * 0.3 : 0,
+                vertical: isWeb ? 15 : 0,
+              ),
+              child: PostCard(
+                post: snapshot.data![index],
+              ),
             ),
           );
         },

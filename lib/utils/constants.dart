@@ -10,9 +10,6 @@ List<Widget> homeScreenItems = [
   const Feed(),
   const Search(),
   const AddPost(),
-  const Center(
-    child: Text('notifications'),
-  ),
   Profile(
     uid: FirebaseAuth.instance.currentUser!.uid,
   ),

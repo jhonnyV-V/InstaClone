@@ -67,12 +67,6 @@ class _MobileScreenState extends State<MobileScreen> {
               backgroundColor: primaryColor,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              activeIcon: Icon(Icons.favorite, color: Colors.white),
-              label: 'notifications',
-              backgroundColor: primaryColor,
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.person),
               activeIcon: Icon(Icons.person, color: Colors.white),
               label: 'profile',
