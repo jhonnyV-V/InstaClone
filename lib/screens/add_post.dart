@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore.dart';
-import 'package:instagram_clone/screens/feed.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:provider/provider.dart';

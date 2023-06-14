@@ -6,6 +6,3 @@ const mobileSearchColor = Color.fromRGBO(38, 38, 38, 1);
 const blueColor = Color.fromRGBO(0, 149, 246, 1);
 const primaryColor = Colors.white;
 const secondaryColor = Colors.grey;
-
-const defaulProfilePicture =
-    "https://www.chocolatebayou.org/wp-content/uploads/No-Image-Person-2048x2048.jpeg";

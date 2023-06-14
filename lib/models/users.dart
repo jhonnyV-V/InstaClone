@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/constants.dart';
 
 class User {
   final String username;
