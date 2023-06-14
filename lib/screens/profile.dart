@@ -222,7 +222,14 @@ class _ProfileState extends State<Profile> {
                     ],
                   ),
                 ),
-                const Divider(),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isWeb ? 40 : 0,
+                  ),
+                  child: Divider(
+                    thickness: isWeb ? 4 : 1,
+                  ),
+                ),
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: isWeb ? 40 : 0,
