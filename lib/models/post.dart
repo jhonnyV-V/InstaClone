@@ -35,7 +35,9 @@ class Post {
       uid: snap['uid'],
       description: snap['description'],
       imageUrl: snap['imageUrl'],
-      datePublished: snap['datePublished'],
+      datePublished: snap['datePublished'].runtimeType == Timestamp
+          ? snap['datePublished'].toDate()
+          : snap['datePublished'],
       likes: snap['likes'],
       likeCount: snap['likeCount'],
       postId: snap['postId'],

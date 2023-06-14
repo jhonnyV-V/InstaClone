@@ -128,4 +128,39 @@ class FirestoreMethods {
       }
     }
   }
+
+  Future<void> followUser(String userToFollowUid) async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      await _firestore.collection(userCollection).doc(uid).update({
+        'following': FieldValue.arrayUnion([userToFollowUid]),
+      });
+      await _firestore.collection(userCollection).doc(userToFollowUid).update({
+        'followers': FieldValue.arrayUnion([uid]),
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+  }
+
+  Future<void> unFollowUser(String userToUnfollowUid) async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      await _firestore.collection(userCollection).doc(uid).update({
+        'following': FieldValue.arrayRemove([userToUnfollowUid]),
+      });
+      await _firestore
+          .collection(userCollection)
+          .doc(userToUnfollowUid)
+          .update({
+        'followers': FieldValue.arrayRemove([uid]),
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+  }
 }

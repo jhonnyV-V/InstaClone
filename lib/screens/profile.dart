@@ -2,8 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/resources/auth.dart';
+import 'package:instagram_clone/resources/firestore.dart';
+import 'package:instagram_clone/screens/login.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/utils/utils.dart';
@@ -26,6 +29,8 @@ class _ProfileState extends State<Profile> {
   int numberOfPost = 0;
   bool isOwner = false;
   bool isFollowing = false;
+  String uid = '';
+  final Key postKey = const Key('Post Builder');
   @override
   void initState() {
     getData();
@@ -44,13 +49,14 @@ class _ProfileState extends State<Profile> {
           .where('uid', isEqualTo: userData.uid)
           .count()
           .get();
-      String uid = FirebaseAuth.instance.currentUser!.uid;
+      String lUid = FirebaseAuth.instance.currentUser!.uid;
 
       setState(() {
         user = userData;
         numberOfPost = numberOfPostQuery.count;
-        isOwner = uid == widget.uid;
+        isOwner = lUid == widget.uid;
         isFollowing = userData.followers.contains(uid);
+        uid = lUid;
       });
     } catch (e) {
       if (context.mounted) {
@@ -72,6 +78,26 @@ class _ProfileState extends State<Profile> {
         backgroundColor: mobileBackgroundColor,
         title: Text(user != null ? user!.username : ''),
         centerTitle: false,
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Auth().logOut();
+              if (context.mounted) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const Login(),
+                  ),
+                );
+              }
+            },
+            child: const Text(
+              'Log out',
+              style: TextStyle(
+                color: primaryColor,
+              ),
+            ),
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(
@@ -137,7 +163,14 @@ class _ProfileState extends State<Profile> {
                                                 borderColor: Colors.grey,
                                                 backgroundColor:
                                                     mobileBackgroundColor,
-                                                callback: () {},
+                                                callback: () async {
+                                                  await FirestoreMethods()
+                                                      .unFollowUser(widget.uid);
+                                                  setState(() {
+                                                    isFollowing = false;
+                                                    user!.followers.remove(uid);
+                                                  });
+                                                },
                                               )
                                             : FollowButton(
                                                 label: 'Follow',
@@ -145,7 +178,14 @@ class _ProfileState extends State<Profile> {
                                                 borderColor: Colors.blueAccent,
                                                 backgroundColor:
                                                     Colors.blueAccent,
-                                                callback: () {},
+                                                callback: () async {
+                                                  await FirestoreMethods()
+                                                      .followUser(widget.uid);
+                                                  setState(() {
+                                                    isFollowing = true;
+                                                    user!.followers.add(uid);
+                                                  });
+                                                },
                                               ),
                                   ],
                                 ),
@@ -175,6 +215,49 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 const Divider(),
+                FutureBuilder(
+                  key: postKey,
+                  future: FirebaseFirestore.instance
+                      .collection(postsCollection)
+                      .where(
+                        'uid',
+                        isEqualTo: widget.uid,
+                      )
+                      .orderBy(
+                        'datePublished',
+                        descending: true,
+                      )
+                      .get(),
+                  builder: (context,
+                      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                          snapshot) {
+                    if (!snapshot.hasData) {
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data != null
+                          ? snapshot.data!.docs.length
+                          : 0,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 1.5,
+                        childAspectRatio: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        Post post = Post.fromSnap(snapshot.data!.docs[index]);
+                        return Image(
+                          image: NetworkImage(post.imageUrl),
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    );
+                  },
+                ),
               ],
             ),
     );
