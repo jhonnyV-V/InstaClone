@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
+import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/auth.dart';
 import 'package:instagram_clone/resources/firestore.dart';
 import 'package:instagram_clone/screens/login.dart';
@@ -11,6 +12,7 @@ import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   final String uid;
@@ -24,13 +26,14 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  model.User? user;
+  model.User? userProfile;
   bool isLoading = false;
   int numberOfPost = 0;
   bool isOwner = false;
   bool isFollowing = false;
   String uid = '';
   final Key postKey = const Key('Post Builder');
+
   @override
   void initState() {
     getData();
@@ -52,10 +55,10 @@ class _ProfileState extends State<Profile> {
       String lUid = FirebaseAuth.instance.currentUser!.uid;
 
       setState(() {
-        user = userData;
+        userProfile = userData;
         numberOfPost = numberOfPostQuery.count;
         isOwner = lUid == widget.uid;
-        isFollowing = userData.followers.contains(uid);
+        isFollowing = userData.followers.contains(lUid);
         uid = lUid;
       });
     } catch (e) {
@@ -79,7 +82,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        title: Text(user != null ? user!.username : ''),
+        title: Text(userProfile != null ? userProfile!.username : ''),
         centerTitle: false,
         actions: [
           TextButton(
@@ -121,8 +124,8 @@ class _ProfileState extends State<Profile> {
                         children: [
                           CircleAvatar(
                             backgroundImage: NetworkImage(
-                              user != null
-                                  ? user!.getProfilePicture()
+                              userProfile != null
+                                  ? userProfile!.getProfilePicture()
                                   : defaultProfilePicture,
                             ),
                             backgroundColor: Colors.grey,
@@ -142,11 +145,15 @@ class _ProfileState extends State<Profile> {
                                       'posts',
                                     ),
                                     buildStatColum(
-                                      user != null ? user!.followers.length : 0,
+                                      userProfile != null
+                                          ? userProfile!.followers.length
+                                          : 0,
                                       'followers',
                                     ),
                                     buildStatColum(
-                                      user != null ? user!.following.length : 0,
+                                      userProfile != null
+                                          ? userProfile!.following.length
+                                          : 0,
                                       'following',
                                     ),
                                   ],
@@ -176,8 +183,15 @@ class _ProfileState extends State<Profile> {
                                                       .unFollowUser(widget.uid);
                                                   setState(() {
                                                     isFollowing = false;
-                                                    user!.followers.remove(uid);
+                                                    userProfile!.followers
+                                                        .remove(uid);
                                                   });
+                                                  if (context.mounted) {
+                                                    Provider.of<UserProvider>(
+                                                      context,
+                                                      listen: false,
+                                                    ).refreshUser();
+                                                  }
                                                 },
                                               )
                                             : FollowButton(
@@ -191,8 +205,15 @@ class _ProfileState extends State<Profile> {
                                                       .followUser(widget.uid);
                                                   setState(() {
                                                     isFollowing = true;
-                                                    user!.followers.add(uid);
+                                                    userProfile!.followers
+                                                        .add(uid);
                                                   });
+                                                  if (context.mounted) {
+                                                    Provider.of<UserProvider>(
+                                                      context,
+                                                      listen: false,
+                                                    ).refreshUser();
+                                                  }
                                                 },
                                               ),
                                   ],
@@ -206,7 +227,7 @@ class _ProfileState extends State<Profile> {
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(top: 15),
                         child: Text(
-                          user != null ? user!.username : '',
+                          userProfile != null ? userProfile!.username : '',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -216,7 +237,7 @@ class _ProfileState extends State<Profile> {
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
-                          user != null ? user!.bio : '',
+                          userProfile != null ? userProfile!.bio : '',
                         ),
                       ),
                     ],
