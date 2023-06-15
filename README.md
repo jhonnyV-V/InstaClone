@@ -72,7 +72,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![screenshot](./assets/Screenshot.png)
+![screenshot](assets/Screenshot.png)
 
 
 <!-- GETTING STARTED -->
@@ -104,7 +104,7 @@
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-![Small demo](./assets/instagram_clone.webm)
+![Small demo](assets/instagram_clone.gif)
 
 <!-- ROADMAP -->
 ## Roadmap
