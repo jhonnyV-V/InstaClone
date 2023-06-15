@@ -30,7 +30,7 @@
 <h3 align="center">Instagram Clone</h3>
 
   <p align="center">
-    some really simple web that can create video calls with multiple users at the same time
+    some really simple flutter app that mimics some instagram functionalities
     <br />
     <a href="https://github.com/jhonnyV-V/instagram_clone"><strong>Explore the docs »</strong></a>
     <br />
@@ -72,7 +72,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![screenshot](assets/Screenshot.png)
+<image src="assets/Screenshot.png" alt="Small demo" width=300>
 
 
 <!-- GETTING STARTED -->
@@ -103,8 +103,7 @@
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-
-![Small demo](assets/instagram_clone.gif)
+<image src="assets/instagram_clone.gif" alt="Small demo" width=300>
 
 <!-- ROADMAP -->
 ## Roadmap
