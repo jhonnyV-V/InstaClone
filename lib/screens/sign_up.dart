@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -89,105 +88,111 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Container(
-        padding: MediaQuery.of(context).size.width >= webScreenSize
-            ? EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width / 3,
-              )
-            : const EdgeInsets.symmetric(horizontal: 32),
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(flex: 2, child: Container()),
-            SvgPicture.asset(
-              "assets/ic_instagram.svg",
-              semanticsLabel: "Instagram logo",
-              colorFilter:
-                  const ColorFilter.mode(primaryColor, BlendMode.srcIn),
-              height: 64,
-            ),
-            const SizedBox(height: 64),
-            Stack(
-              children: [
-                _img != null
-                    ? CircleAvatar(
-                        radius: 64,
-                        backgroundImage: MemoryImage(_img!),
-                      )
-                    : const CircleAvatar(
-                        radius: 64,
-                        backgroundImage: NetworkImage(defaultProfilePicture),
-                      ),
-                Positioned(
+        child: Container(
+          padding: MediaQuery.of(context).size.width >= webScreenSize
+              ? EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width / 3,
+                )
+              : const EdgeInsets.symmetric(horizontal: 32),
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(flex: 2, child: Container()),
+              SvgPicture.asset(
+                "assets/ic_instagram.svg",
+                semanticsLabel: "Instagram logo",
+                colorFilter: const ColorFilter.mode(
+                  primaryColor,
+                  BlendMode.srcIn,
+                ),
+                height: 64,
+              ),
+              const SizedBox(height: 64),
+              Stack(
+                children: [
+                  _img != null
+                      ? CircleAvatar(
+                          radius: 64,
+                          backgroundImage: MemoryImage(_img!),
+                        )
+                      : const CircleAvatar(
+                          radius: 64,
+                          backgroundImage: NetworkImage(defaultProfilePicture),
+                        ),
+                  Positioned(
                     bottom: -10,
                     left: 80,
                     child: IconButton(
-                        onPressed: selectImage,
-                        icon: const Icon(
-                          Icons.add_a_photo,
-                          color: Colors.white70,
-                        )))
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextFieldInput(
-              hint: "Enter your username",
-              controller: userNameController,
-              type: TextInputType.text,
-            ),
-            const SizedBox(height: 24),
-            TextFieldInput(
-              hint: "Enter your bio",
-              controller: bioController,
-              type: TextInputType.multiline,
-            ),
-            const SizedBox(height: 24),
-            TextFieldInput(
-              hint: "Enter your email",
-              controller: emailController,
-              type: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 24),
-            TextFieldInput(
-              hint: "Enter your password",
-              controller: passwordController,
-              type: TextInputType.text,
-              isPassword: true,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: signUpHandler,
-              style: ButtonStyle(
+                      onPressed: selectImage,
+                      icon: const Icon(
+                        Icons.add_a_photo,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextFieldInput(
+                hint: "Enter your username",
+                controller: userNameController,
+                type: TextInputType.text,
+              ),
+              const SizedBox(height: 24),
+              TextFieldInput(
+                hint: "Enter your bio",
+                controller: bioController,
+                type: TextInputType.multiline,
+              ),
+              const SizedBox(height: 24),
+              TextFieldInput(
+                hint: "Enter your email",
+                controller: emailController,
+                type: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 24),
+              TextFieldInput(
+                hint: "Enter your password",
+                controller: passwordController,
+                type: TextInputType.text,
+                isPassword: true,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: signUpHandler,
+                style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   fixedSize: MaterialStateProperty.all<Size>(
-                      Size(MediaQuery.of(context).size.width, 14))),
-              child: _loading
-                  ? const CircularProgressIndicator(
-                      color: primaryColor,
-                    )
-                  : const Text("Sign up"),
-            ),
-            const SizedBox(height: 12),
-            Flexible(flex: 2, child: Container()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: const Text(
-                    "Do you have an account?",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                    ),
+                    Size(MediaQuery.of(context).size.width, 14),
                   ),
                 ),
-                TextButton(
+                child: _loading
+                    ? const CircularProgressIndicator(
+                        color: primaryColor,
+                      )
+                    : const Text("Sign up"),
+              ),
+              const SizedBox(height: 12),
+              Flexible(flex: 2, child: Container()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: const Text(
+                      "Do you have an account?",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  TextButton(
                     onPressed: login,
                     child: const Text(
                       "Login",
@@ -195,12 +200,14 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                    )),
-              ],
-            ),
-          ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }

@@ -101,6 +101,14 @@ class _FeedState extends State<Feed> {
               ),
             );
           }
+          if (snapshot.data != null && snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text(
+                'There are no post to display',
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
           return ListView.builder(
             itemCount: snapshot.data != null ? snapshot.data!.length : 0,
             itemBuilder: (context, index) => Container(
