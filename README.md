@@ -108,11 +108,14 @@
 <!-- ROADMAP -->
 ## Roadmap
 
-- Create better a roadmap
+- store Images in cache
+- mantain a state in the app to make less request to firebase
 - update the add a post screen
+- let the user upload a post with multiple images
+- add stories
 - add a screen to let the user change their profile
 - let the user bookmark post
-- add stories
+- add in app messages
 
 <!-- CONTRIBUTING -->
 ## Contributing

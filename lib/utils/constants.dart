@@ -19,6 +19,8 @@ const postsCollection = 'posts';
 const commentCollection = 'comments';
 const postStoragePath = 'post';
 const profilePicturesPath = 'profilePictures';
+const tempProfilePicture = 'profilePicture';
+const tempPostImage = 'post';
 
 const defaultProfilePicture =
     "https://www.chocolatebayou.org/wp-content/uploads/No-Image-Person-2048x2048.jpeg";

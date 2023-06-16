@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/populated_post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
@@ -61,7 +63,9 @@ class _PostCardState extends State<PostCard> {
                   onTap: () => goToUserProfile(context),
                   child: CircleAvatar(
                     radius: 16,
-                    backgroundImage: NetworkImage(widget.post.profilePicture),
+                    backgroundImage: MemoryImage(
+                      File(widget.post.profilePicture).readAsBytesSync(),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -137,8 +141,8 @@ class _PostCardState extends State<PostCard> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.35,
                   width: MediaQuery.of(context).size.width,
-                  child: Image.network(
-                    widget.post.imageUrl,
+                  child: Image.file(
+                    File(widget.post.imageUrl),
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +10,7 @@ import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/auth.dart';
 import 'package:instagram_clone/resources/firestore.dart';
+import 'package:instagram_clone/resources/temporary_storage.dart';
 import 'package:instagram_clone/screens/login.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
@@ -55,9 +58,22 @@ class _ProfileState extends State<Profile> {
           .count()
           .get();
       String lUid = FirebaseAuth.instance.currentUser!.uid;
+      String profilePicture = await TemporaryStorage.getImage(
+        userData.uid,
+        tempProfilePicture,
+        userData.getProfilePicture(),
+      );
 
       setState(() {
-        userProfile = userData;
+        userProfile = model.User(
+          username: userData.username,
+          uid: userData.uid,
+          profilePicture: profilePicture,
+          bio: userData.bio,
+          email: userData.email,
+          followers: userData.followers,
+          following: userData.following,
+        );
         numberOfPost = numberOfPostQuery.count;
         isOwner = lUid == widget.uid;
         isFollowing = userData.followers.contains(lUid);
@@ -76,10 +92,57 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  Future<List<Post>> getUserPost() async {
+    QuerySnapshot<Map<String, dynamic>> result =
+        await FirebaseFirestore.instance
+            .collection(postsCollection)
+            .where(
+              'uid',
+              isEqualTo: widget.uid,
+            )
+            .orderBy(
+              'datePublished',
+              descending: true,
+            )
+            .get();
+    List<Post> list = [];
+    for (var element in result.docs) {
+      Post snapPost = Post.fromSnap(element);
+      list.add(
+        Post(
+          uid: snapPost.uid,
+          description: snapPost.description,
+          imageUrl: await TemporaryStorage.getImage(
+            '1',
+            '$tempPostImage/${snapPost.postId}',
+            snapPost.imageUrl,
+          ),
+          datePublished: snapPost.datePublished,
+          likes: snapPost.likes,
+          postId: snapPost.postId,
+          likeCount: snapPost.likeCount,
+        ),
+      );
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWeb = width >= webScreenSize;
+
+    ImageProvider getProfileImage() {
+      if (userProfile != null) {
+        return MemoryImage(
+          File(
+            userProfile!.profilePicture,
+          ).readAsBytesSync(),
+        );
+      } else {
+        return const NetworkImage(defaultProfilePicture);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -125,11 +188,7 @@ class _ProfileState extends State<Profile> {
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              userProfile != null
-                                  ? userProfile!.getProfilePicture()
-                                  : defaultProfilePicture,
-                            ),
+                            backgroundImage: getProfileImage(),
                             backgroundColor: Colors.grey,
                             radius: isWeb ? 64 : 40,
                           ),
@@ -259,20 +318,8 @@ class _ProfileState extends State<Profile> {
                   ),
                   child: FutureBuilder(
                     key: postKey,
-                    future: FirebaseFirestore.instance
-                        .collection(postsCollection)
-                        .where(
-                          'uid',
-                          isEqualTo: widget.uid,
-                        )
-                        .orderBy(
-                          'datePublished',
-                          descending: true,
-                        )
-                        .get(),
-                    builder: (context,
-                        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                            snapshot) {
+                    future: getUserPost(),
+                    builder: (context, AsyncSnapshot<List<Post>> snapshot) {
                       if (!snapshot.hasData) {
                         const Center(
                           child: CircularProgressIndicator(),
@@ -280,9 +327,8 @@ class _ProfileState extends State<Profile> {
                       }
                       return GridView.builder(
                         shrinkWrap: true,
-                        itemCount: snapshot.data != null
-                            ? snapshot.data!.docs.length
-                            : 0,
+                        itemCount:
+                            snapshot.data != null ? snapshot.data!.length : 0,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
@@ -291,50 +337,8 @@ class _ProfileState extends State<Profile> {
                           childAspectRatio: 1,
                         ),
                         itemBuilder: (context, index) {
-                          Post post = Post.fromSnap(snapshot.data!.docs[index]);
-                          return InkWell(
-                            onTap: () async {
-                              Post post =
-                                  Post.fromSnap(snapshot.data!.docs[index]);
-                              model.User postUser =
-                                  await Auth().getUserDetails(post.uid);
-                              AggregateQuerySnapshot num =
-                                  await FirebaseFirestore.instance
-                                      .collection(postsCollection)
-                                      .doc(post.postId)
-                                      .collection(commentCollection)
-                                      .count()
-                                      .get();
-                              PopulatedPost populatedPost =
-                                  PopulatedPost.fromPost(
-                                post,
-                                postUser.profilePicture,
-                                postUser.username,
-                                num.count,
-                              );
-                              if (context.mounted) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => Scaffold(
-                                      body: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          PostCard(
-                                            post: populatedPost,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Image(
-                              image: NetworkImage(post.imageUrl),
-                              fit: BoxFit.cover,
-                            ),
-                          );
+                          Post post = snapshot.data![index];
+                          return postImage(post);
                         },
                       );
                     },
@@ -369,6 +373,50 @@ class _ProfileState extends State<Profile> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget postImage(Post post) {
+    return InkWell(
+      onTap: () async {
+        model.User postUser = await Auth().getUserDetails(post.uid);
+        AggregateQuerySnapshot num = await FirebaseFirestore.instance
+            .collection(postsCollection)
+            .doc(post.postId)
+            .collection(commentCollection)
+            .count()
+            .get();
+        PopulatedPost populatedPost = PopulatedPost.fromPost(
+          post,
+          await TemporaryStorage.getImage(
+            postUser.uid,
+            tempProfilePicture,
+            postUser.profilePicture,
+          ),
+          postUser.username,
+          num.count,
+        );
+        if (context.mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => Scaffold(
+                body: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    PostCard(
+                      post: populatedPost,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
+      child: Image.file(
+        File(post.imageUrl),
+        fit: BoxFit.cover,
+      ),
     );
   }
 }

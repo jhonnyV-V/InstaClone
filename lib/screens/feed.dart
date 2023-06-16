@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone/models/populated_post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/resources/auth.dart';
+import 'package:instagram_clone/resources/temporary_storage.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/widgets/post_card.dart';
@@ -45,12 +46,20 @@ class _FeedState extends State<Feed> {
         PopulatedPost(
           uid: uid,
           description: data['description'],
-          imageUrl: data['imageUrl'],
+          imageUrl: await TemporaryStorage.getImage(
+            '1',
+            '$tempPostImage/${data['postId']}',
+            data['imageUrl'],
+          ),
           datePublished: data['datePublished'].toDate(),
           likes: data['likes'],
           likeCount: data['likeCount'],
           postId: data['postId'],
-          profilePicture: userData.getProfilePicture(),
+          profilePicture: await TemporaryStorage.getImage(
+            userData.uid,
+            tempProfilePicture,
+            userData.getProfilePicture(),
+          ),
           username: userData.username,
           numOfComments: num.count,
         ),
