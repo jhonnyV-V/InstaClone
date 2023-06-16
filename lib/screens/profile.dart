@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/populated_post.dart';
 import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
@@ -12,6 +13,7 @@ import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
+import 'package:instagram_clone/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
@@ -290,9 +292,48 @@ class _ProfileState extends State<Profile> {
                         ),
                         itemBuilder: (context, index) {
                           Post post = Post.fromSnap(snapshot.data!.docs[index]);
-                          return Image(
-                            image: NetworkImage(post.imageUrl),
-                            fit: BoxFit.cover,
+                          return InkWell(
+                            onTap: () async {
+                              Post post =
+                                  Post.fromSnap(snapshot.data!.docs[index]);
+                              model.User postUser =
+                                  await Auth().getUserDetails(post.uid);
+                              AggregateQuerySnapshot num =
+                                  await FirebaseFirestore.instance
+                                      .collection(postsCollection)
+                                      .doc(post.postId)
+                                      .collection(commentCollection)
+                                      .count()
+                                      .get();
+                              PopulatedPost populatedPost =
+                                  PopulatedPost.fromPost(
+                                post,
+                                postUser.profilePicture,
+                                postUser.username,
+                                num.count,
+                              );
+                              if (context.mounted) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      body: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          PostCard(
+                                            post: populatedPost,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Image(
+                              image: NetworkImage(post.imageUrl),
+                              fit: BoxFit.cover,
+                            ),
                           );
                         },
                       );

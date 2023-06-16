@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:instagram_clone/models/populated_post.dart';
+import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
+import 'package:instagram_clone/resources/auth.dart';
 import 'package:instagram_clone/screens/profile.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
+import 'package:instagram_clone/widgets/post_card.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -114,8 +118,47 @@ class _SearchState extends State<Search> {
                   childrenDelegate: SliverChildBuilderDelegate(
                     (context, index) => snapshot.data != null &&
                             index < snapshot.data!.docs.length
-                        ? Image.network(
-                            snapshot.data!.docs[index]['imageUrl'],
+                        ? InkWell(
+                            onTap: () async {
+                              Post post =
+                                  Post.fromSnap(snapshot.data!.docs[index]);
+                              model.User postUser =
+                                  await Auth().getUserDetails(post.uid);
+                              AggregateQuerySnapshot num =
+                                  await FirebaseFirestore.instance
+                                      .collection(postsCollection)
+                                      .doc(post.postId)
+                                      .collection(commentCollection)
+                                      .count()
+                                      .get();
+                              PopulatedPost populatedPost =
+                                  PopulatedPost.fromPost(
+                                post,
+                                postUser.profilePicture,
+                                postUser.username,
+                                num.count,
+                              );
+                              if (context.mounted) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      body: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          PostCard(
+                                            post: populatedPost,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Image.network(
+                              snapshot.data!.docs[index]['imageUrl'],
+                            ),
                           )
                         : null,
                   ),

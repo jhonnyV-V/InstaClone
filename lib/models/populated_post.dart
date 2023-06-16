@@ -48,4 +48,24 @@ class PopulatedPost extends Post {
       numOfComments: snap['numOfComments'],
     );
   }
+
+  static PopulatedPost fromPost(
+    Post post,
+    String profilePicture,
+    String username,
+    int numOfComments,
+  ) {
+    return PopulatedPost(
+      uid: post.uid,
+      description: post.description,
+      imageUrl: post.imageUrl,
+      datePublished: post.datePublished,
+      likes: post.likes,
+      likeCount: post.likeCount,
+      postId: post.postId,
+      profilePicture: profilePicture,
+      username: username,
+      numOfComments: numOfComments,
+    );
+  }
 }
