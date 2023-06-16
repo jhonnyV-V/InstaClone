@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone/models/populated_post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
-import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/auth.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/widgets/post_card.dart';
-import 'package:provider/provider.dart';
 
 class Feed extends StatefulWidget {
   const Feed({super.key});
@@ -64,21 +62,23 @@ class _FeedState extends State<Feed> {
   @override
   void initState() {
     super.initState();
-    final model.User user =
-        Provider.of<UserProvider>(context, listen: false).getUser;
-    stream = FirebaseFirestore.instance
-        .collection(postsCollection)
-        .where(
-          'uid',
-          whereIn: user.following.followedBy(
-            [
-              user.uid,
-            ],
-          ),
-        )
-        .orderBy('datePublished', descending: true)
-        .snapshots()
-        .asyncMap((posts) => populateUserData(posts));
+    () async {
+      final model.User user = await Auth().getUserDetails();
+      stream = FirebaseFirestore.instance
+          .collection(postsCollection)
+          .where(
+            'uid',
+            whereIn: user.following.followedBy(
+              [
+                user.uid,
+              ],
+            ),
+          )
+          .orderBy('datePublished', descending: true)
+          .snapshots()
+          .asyncMap((posts) => populateUserData(posts));
+    }()
+        .whenComplete(() => setState(() {}));
   }
 
   @override
