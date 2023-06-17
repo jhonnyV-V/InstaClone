@@ -386,13 +386,14 @@ class _ProfileState extends State<Profile> {
             .collection(commentCollection)
             .count()
             .get();
+        String profilePicture = await TemporaryStorage.getImage(
+          postUser.uid,
+          tempProfilePicture,
+          postUser.getProfilePicture(),
+        );
         PopulatedPost populatedPost = PopulatedPost.fromPost(
           post,
-          await TemporaryStorage.getImage(
-            postUser.uid,
-            tempProfilePicture,
-            postUser.profilePicture,
-          ),
+          profilePicture,
           postUser.username,
           num.count,
         );

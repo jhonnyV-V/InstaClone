@@ -50,11 +50,12 @@ class _SignUpState extends State<SignUp> {
       _loading = true;
     });
     String res = await Auth().signUpUser(
-        email: emailController.text,
-        password: passwordController.text,
-        username: userNameController.text,
-        bio: bioController.text,
-        file: _img!);
+      email: emailController.text,
+      password: passwordController.text,
+      username: userNameController.text,
+      bio: bioController.text,
+      file: _img != null ? _img! : null,
+    );
     if (res != "success") {
       if (context.mounted) {
         showSnackBar(res, context);

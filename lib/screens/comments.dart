@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/populated_comment.dart';
 import 'package:instagram_clone/resources/auth.dart';
 import 'package:instagram_clone/resources/firestore.dart';
+import 'package:instagram_clone/resources/temporary_storage.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/widgets/comment_card.dart';
@@ -46,7 +49,11 @@ class _CommentsState extends State<Comments> {
           likes: data['likes'],
           likeCount: data['likeCount'],
           postId: data['postId'],
-          profilePicture: userData.getProfilePicture(),
+          profilePicture: await TemporaryStorage.getImage(
+            userData.uid,
+            tempProfilePicture,
+            userData.getProfilePicture(),
+          ),
           username: userData.username,
         ),
       );
@@ -108,7 +115,9 @@ class _CommentsState extends State<Comments> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(user.getProfilePicture()),
+                backgroundImage: MemoryImage(
+                  File(user.profilePicture).readAsBytesSync(),
+                ),
                 radius: 18,
               ),
               Expanded(
