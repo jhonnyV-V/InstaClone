@@ -108,14 +108,23 @@
 <!-- ROADMAP -->
 ## Roadmap
 
-- store Images in cache
-- mantain a state in the app to make less request to firebase
 - update the add a post screen
 - let the user upload a post with multiple images
 - add stories
+- mantain a state in the app to make less request to firebase
 - add a screen to let the user change their profile
 - let the user bookmark post
 - add in app messages
+
+## Features
+
+- single image post
+- likes
+- following users and followers
+- search for users
+- lastest post
+- profile page with all the post
+- comments
 
 <!-- CONTRIBUTING -->
 ## Contributing
