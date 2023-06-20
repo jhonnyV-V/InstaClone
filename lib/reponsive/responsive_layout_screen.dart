@@ -4,8 +4,11 @@ import 'package:instagram_clone/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class ResponsiveLayout extends StatefulWidget {
-  const ResponsiveLayout(
-      {super.key, required this.mobileScreen, required this.webScreen});
+  const ResponsiveLayout({
+    super.key,
+    required this.mobileScreen,
+    required this.webScreen,
+  });
 
   final Widget webScreen;
   final Widget mobileScreen;

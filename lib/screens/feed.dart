@@ -85,7 +85,9 @@ class _FeedState extends State<Feed> {
           )
           .orderBy('datePublished', descending: true)
           .snapshots()
-          .asyncMap((posts) => populateUserData(posts));
+          .asyncMap(
+            (posts) => populateUserData(posts),
+          );
     }()
         .whenComplete(() => setState(() {}));
   }

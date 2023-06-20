@@ -6,6 +6,8 @@ class FollowButton extends StatefulWidget {
   final Color borderColor;
   final Color labelColor;
   final String label;
+  final double? width;
+  final double? height;
   const FollowButton({
     super.key,
     this.callback,
@@ -13,6 +15,8 @@ class FollowButton extends StatefulWidget {
     required this.borderColor,
     required this.labelColor,
     required this.label,
+    this.width,
+    this.height,
   });
 
   @override
@@ -35,8 +39,8 @@ class _FollowButtonState extends State<FollowButton> {
             borderRadius: BorderRadius.circular(5),
           ),
           alignment: Alignment.center,
-          width: 250,
-          height: 27,
+          width: widget.width ?? 250,
+          height: widget.height ?? 27,
           child: Text(
             widget.label,
             style: TextStyle(

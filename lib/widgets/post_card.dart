@@ -7,6 +7,7 @@ import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore.dart';
 import 'package:instagram_clone/screens/comments.dart';
 import 'package:instagram_clone/screens/profile.dart';
+import 'package:instagram_clone/screens/user_list.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/widgets/like_animation.dart';
@@ -225,9 +226,25 @@ class _PostCardState extends State<PostCard> {
                       .textTheme
                       .titleSmall!
                       .copyWith(fontWeight: FontWeight.w800),
-                  child: Text(
-                    '${widget.post.likes.length} likes',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  child: InkWell(
+                    onTap: () {
+                      if (mounted) {
+                        if (widget.post.likes.isNotEmpty) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserList(
+                                uids: widget.post.likes,
+                                title: 'Likes',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Text(
+                      '${widget.post.likes.length} likes',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
                 ),
                 Container(

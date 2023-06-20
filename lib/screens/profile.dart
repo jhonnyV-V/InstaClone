@@ -12,6 +12,7 @@ import 'package:instagram_clone/resources/auth.dart';
 import 'package:instagram_clone/resources/firestore.dart';
 import 'package:instagram_clone/resources/temporary_storage.dart';
 import 'package:instagram_clone/screens/login.dart';
+import 'package:instagram_clone/screens/user_list.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/utils/utils.dart';
@@ -144,6 +145,21 @@ class _ProfileState extends State<Profile> {
       }
     }
 
+    void displayUserList(List uids) {
+      if (mounted) {
+        if (uids.isNotEmpty) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => UserList(
+                uids: uids,
+                title: 'Likes',
+              ),
+            ),
+          );
+        }
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
@@ -210,12 +226,24 @@ class _ProfileState extends State<Profile> {
                                           ? userProfile!.followers.length
                                           : 0,
                                       'followers',
+                                      userProfile != null &&
+                                              userProfile!.followers.isNotEmpty
+                                          ? () => displayUserList(
+                                                userProfile!.followers,
+                                              )
+                                          : null,
                                     ),
                                     buildStatColum(
                                       userProfile != null
                                           ? userProfile!.following.length
                                           : 0,
                                       'following',
+                                      userProfile != null &&
+                                              userProfile!.followers.isNotEmpty
+                                          ? () => displayUserList(
+                                                userProfile!.following,
+                                              )
+                                          : null,
                                     ),
                                   ],
                                 ),
@@ -349,26 +377,32 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Column buildStatColum(int num, String label) {
+  Column buildStatColum(int num, String label, [VoidCallback? callback]) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          num.toString(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        InkWell(
+          onTap: callback,
+          child: Text(
+            num.toString(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Container(
           margin: const EdgeInsets.only(top: 4),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: Colors.grey,
+          child: InkWell(
+            onTap: callback,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey,
+              ),
             ),
           ),
         ),
@@ -401,13 +435,11 @@ class _ProfileState extends State<Profile> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => Scaffold(
-                body: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    PostCard(
-                      post: populatedPost,
-                    ),
-                  ],
+                appBar: AppBar(
+                  backgroundColor: mobileBackgroundColor,
+                ),
+                body: PostCard(
+                  post: populatedPost,
                 ),
               ),
             ),

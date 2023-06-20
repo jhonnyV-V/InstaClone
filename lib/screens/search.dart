@@ -65,7 +65,7 @@ class _SearchState extends State<Search> {
     return list;
   }
 
-  Future<List<Post>> getUserPost() async {
+  Future<List<Post>> getPostFromUser() async {
     QuerySnapshot<Map<String, dynamic>> result = await FirebaseFirestore
         .instance
         .collection(postsCollection)
@@ -147,7 +147,7 @@ class _SearchState extends State<Search> {
             )
           : FutureBuilder(
               key: postsBuilderKey,
-              future: getUserPost(),
+              future: getPostFromUser(),
               builder: (context, AsyncSnapshot<List<Post>> snapshot) {
                 if (!snapshot.hasData) {
                   const Center(
@@ -168,56 +168,53 @@ class _SearchState extends State<Search> {
                     ],
                   ),
                   childrenDelegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        snapshot.data != null && index < snapshot.data!.length
-                            ? InkWell(
-                                onTap: () async {
-                                  Post post = snapshot.data![index];
-                                  model.User postUser =
-                                      await Auth().getUserDetails(post.uid);
-                                  AggregateQuerySnapshot num =
-                                      await FirebaseFirestore.instance
-                                          .collection(postsCollection)
-                                          .doc(post.postId)
-                                          .collection(commentCollection)
-                                          .count()
-                                          .get();
-                                  String profilePicture =
-                                      await TemporaryStorage.getImage(
-                                    postUser.uid,
-                                    tempProfilePicture,
-                                    postUser.getProfilePicture(),
-                                  );
-                                  PopulatedPost populatedPost =
-                                      PopulatedPost.fromPost(
-                                    post,
-                                    profilePicture,
-                                    postUser.username,
-                                    num.count,
-                                  );
-                                  if (context.mounted) {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => Scaffold(
-                                          body: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              PostCard(
-                                                post: populatedPost,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                    (context, index) => snapshot.data != null &&
+                            index < snapshot.data!.length
+                        ? InkWell(
+                            onTap: () async {
+                              Post post = snapshot.data![index];
+                              model.User postUser =
+                                  await Auth().getUserDetails(post.uid);
+                              AggregateQuerySnapshot num =
+                                  await FirebaseFirestore.instance
+                                      .collection(postsCollection)
+                                      .doc(post.postId)
+                                      .collection(commentCollection)
+                                      .count()
+                                      .get();
+                              String profilePicture =
+                                  await TemporaryStorage.getImage(
+                                postUser.uid,
+                                tempProfilePicture,
+                                postUser.getProfilePicture(),
+                              );
+                              PopulatedPost populatedPost =
+                                  PopulatedPost.fromPost(
+                                post,
+                                profilePicture,
+                                postUser.username,
+                                num.count,
+                              );
+                              if (context.mounted) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      appBar: AppBar(
+                                        backgroundColor: mobileBackgroundColor,
                                       ),
-                                    );
-                                  }
-                                },
-                                child: Image.file(
-                                  File(snapshot.data![index].imageUrl),
-                                ),
-                              )
-                            : null,
+                                      body: PostCard(
+                                        post: populatedPost,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Image.file(
+                              File(snapshot.data![index].imageUrl),
+                            ),
+                          )
+                        : null,
                   ),
                 );
               },
