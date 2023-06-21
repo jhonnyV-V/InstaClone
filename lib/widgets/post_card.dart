@@ -89,6 +89,9 @@ class _PostCardState extends State<PostCard> {
                 ),
                 IconButton(
                   onPressed: () {
+                    if (widget.post.uid == user.uid) {
+                      return;
+                    }
                     showDialog(
                       context: context,
                       builder: (context) => Dialog(
