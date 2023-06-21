@@ -163,4 +163,23 @@ class FirestoreMethods {
       }
     }
   }
+
+  Future<void> bookmarksPost(String postId, List bookmarks) async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      if (bookmarks.contains(postId)) {
+        await _firestore.collection(userCollection).doc(uid).update({
+          'bookmarks': FieldValue.arrayRemove([postId]),
+        });
+      } else {
+        await _firestore.collection(userCollection).doc(uid).update({
+          'bookmarks': FieldValue.arrayUnion([postId]),
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+  }
 }

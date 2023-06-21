@@ -9,14 +9,17 @@ class User {
   final String bio;
   final List followers;
   final List following;
-  const User(
-      {required this.username,
-      required this.uid,
-      required this.profilePicture,
-      required this.bio,
-      required this.email,
-      required this.followers,
-      required this.following});
+  final List bookmarks;
+  const User({
+    required this.username,
+    required this.uid,
+    required this.profilePicture,
+    required this.bio,
+    required this.email,
+    required this.followers,
+    required this.following,
+    required this.bookmarks,
+  });
 
   Map<String, dynamic> toJson() => {
         "username": username,
@@ -26,19 +29,22 @@ class User {
         "bio": bio,
         "followers": followers,
         "following": following,
+        "bookmarks": bookmarks,
       };
 
   static User fromSnap(DocumentSnapshot snapshot) {
     var snap = snapshot.data() as Map<String, dynamic>;
 
     return User(
-        username: snap['username'],
-        uid: snap['uid'],
-        profilePicture: snap['profilePicture'],
-        bio: snap['bio'],
-        email: snap['email'],
-        followers: snap['followers'],
-        following: snap['following']);
+      username: snap['username'],
+      uid: snap['uid'],
+      profilePicture: snap['profilePicture'],
+      bio: snap['bio'],
+      email: snap['email'],
+      followers: snap['followers'],
+      following: snap['following'],
+      bookmarks: snap['bookmarks'],
+    );
   }
 
   String getProfilePicture() {

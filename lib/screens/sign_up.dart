@@ -57,11 +57,11 @@ class _SignUpState extends State<SignUp> {
       file: _img != null ? _img! : null,
     );
     if (res != "success") {
-      if (context.mounted) {
+      if (mounted) {
         showSnackBar(res, context);
       }
     } else {
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const ResponsiveLayout(

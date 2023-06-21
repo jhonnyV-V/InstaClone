@@ -10,6 +10,7 @@ import 'package:instagram_clone/screens/profile.dart';
 import 'package:instagram_clone/screens/user_list.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
+import 'package:instagram_clone/widgets/bookmarks_button.dart';
 import 'package:instagram_clone/widgets/like_animation.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,7 @@ class _PostCardState extends State<PostCard> {
     final userLiked = widget.post.likes.contains(user.uid);
     final width = MediaQuery.of(context).size.width;
     final isWeb = width >= webScreenSize;
+    final bool isBookmarked = user.bookmarks.contains(widget.post.postId);
 
     void displayComments() {
       Navigator.of(context).push(
@@ -48,6 +50,16 @@ class _PostCardState extends State<PostCard> {
           builder: (context) => Profile(uid: widget.post.uid),
         ),
       );
+    }
+
+    Future<void> saveToBookmarks() async {
+      await FirestoreMethods().bookmarksPost(
+        widget.post.postId,
+        user.bookmarks,
+      );
+      if (mounted) {
+        Provider.of<UserProvider>(context, listen: false).refreshUser();
+      }
     }
 
     return Container(
@@ -205,14 +217,9 @@ class _PostCardState extends State<PostCard> {
                   Icons.send,
                 ),
               ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    icon: const Icon(Icons.bookmark_border),
-                    onPressed: () {},
-                  ),
-                ),
+              BookmarkButton(
+                initalState: isBookmarked,
+                callback: saveToBookmarks,
               ),
             ],
           ),

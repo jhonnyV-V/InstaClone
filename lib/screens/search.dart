@@ -58,6 +58,7 @@ class _SearchState extends State<Search> {
           email: snap.email,
           followers: snap.followers,
           following: snap.following,
+          bookmarks: snap.bookmarks,
         ),
       );
     }
@@ -195,7 +196,7 @@ class _SearchState extends State<Search> {
                                 postUser.username,
                                 num.count,
                               );
-                              if (context.mounted) {
+                              if (mounted) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => Scaffold(

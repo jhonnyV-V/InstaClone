@@ -51,6 +51,7 @@ class _UserListState extends State<UserList> {
           email: snap.email,
           followers: snap.followers,
           following: snap.following,
+          bookmarks: snap.bookmarks,
         ),
       );
     }
@@ -75,7 +76,7 @@ class _UserListState extends State<UserList> {
           backgroundColor: mobileBackgroundColor,
           callback: () async {
             await FirestoreMethods().unFollowUser(user.uid);
-            if (context.mounted) {
+            if (mounted) {
               Provider.of<UserProvider>(
                 context,
                 listen: false,
@@ -91,7 +92,7 @@ class _UserListState extends State<UserList> {
         backgroundColor: Colors.blueAccent,
         callback: () async {
           await FirestoreMethods().followUser(user.uid);
-          if (context.mounted) {
+          if (mounted) {
             Provider.of<UserProvider>(
               context,
               listen: false,

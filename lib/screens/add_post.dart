@@ -77,14 +77,14 @@ class _AddPostState extends State<AddPost> {
           _isLoading = false;
         });
         clearImage();
-        if (context.mounted) {
+        if (mounted) {
           showSnackBar('Posted', context);
         }
       } else {
         setState(() {
           _isLoading = false;
         });
-        if (context.mounted) {
+        if (mounted) {
           showSnackBar(res, context);
         }
       }

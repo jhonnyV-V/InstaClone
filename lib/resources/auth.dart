@@ -28,13 +28,15 @@ class Auth {
         picture = await Storage().uploadImage(file, profilePicturesPath, false);
       }
       model.User user = model.User(
-          username: username,
-          uid: cred.user!.uid,
-          profilePicture: picture,
-          bio: bio,
-          email: email,
-          followers: [],
-          following: []);
+        username: username,
+        uid: cred.user!.uid,
+        profilePicture: picture,
+        bio: bio,
+        email: email,
+        followers: [],
+        following: [],
+        bookmarks: [],
+      );
 
       await _firestore
           .collection(userCollection)

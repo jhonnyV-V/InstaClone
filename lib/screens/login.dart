@@ -36,11 +36,11 @@ class _LoginState extends State<Login> {
     String res = await Auth()
         .login(email: emailController.text, password: passwordController.text);
     if (res != "success") {
-      if (context.mounted) {
+      if (mounted) {
         showSnackBar(res, context);
       }
     } else {
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const ResponsiveLayout(

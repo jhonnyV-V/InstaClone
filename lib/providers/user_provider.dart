@@ -7,13 +7,15 @@ class UserProvider extends ChangeNotifier {
   User get getUser =>
       _user ??
       const User(
-          username: '',
-          uid: '',
-          profilePicture: '',
-          bio: '',
-          email: '',
-          followers: [],
-          following: []);
+        username: '',
+        uid: '',
+        profilePicture: '',
+        bio: '',
+        email: '',
+        followers: [],
+        following: [],
+        bookmarks: [],
+      );
   final Auth _auth = Auth();
 
   Future<void> refreshUser() async {
