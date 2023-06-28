@@ -37,7 +37,7 @@ class PostPreview extends StatelessWidget {
             for (XFile element in images)
               Image.file(
                 File(element.path),
-                fit: BoxFit.contain,
+                fit: BoxFit.fill,
               ),
           ],
         );
@@ -46,7 +46,7 @@ class PostPreview extends StatelessWidget {
           height: MediaQuery.of(context).size.height * 0.35,
           width: MediaQuery.of(context).size.width,
           File(images.first.path),
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         );
       }
     }

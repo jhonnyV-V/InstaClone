@@ -75,7 +75,7 @@ class _PostCardState extends State<PostCard> {
             for (String element in widget.post.imagesUrl)
               Image.file(
                 File(element),
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
               ),
           ],
         );
@@ -84,7 +84,7 @@ class _PostCardState extends State<PostCard> {
           height: MediaQuery.of(context).size.height * 0.35,
           width: MediaQuery.of(context).size.width,
           File(widget.post.imagesUrl.first),
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         );
       }
     }
