@@ -108,8 +108,6 @@
 <!-- ROADMAP -->
 ## Roadmap
 
-- update the add a post screen
-- let the user upload a post with multiple images
 - add stories
 - mantain a state in the app to make less request to firebase
 - add a screen to let the user change their profile
@@ -117,11 +115,10 @@
 
 ## Features
 
-- single image post
+- multiple image post
 - likes
-- following users and followers
+- following users
 - search for users
-- lastest post
 - profile page with all the post
 - comments
 - bookmark post
