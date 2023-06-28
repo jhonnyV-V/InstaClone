@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,7 +24,8 @@ class _SignUpState extends State<SignUp> {
   final passwordController = TextEditingController();
   final bioController = TextEditingController();
   final userNameController = TextEditingController();
-  Uint8List? _img;
+  final ImagePicker imagePicker = ImagePicker();
+  XFile? _img;
   bool _loading = false;
 
   @override
@@ -37,7 +38,9 @@ class _SignUpState extends State<SignUp> {
   }
 
   void selectImage() async {
-    Uint8List? image = await pickImage(ImageSource.gallery);
+    XFile? image = await imagePicker.pickImage(
+      source: ImageSource.camera,
+    );
     if (image != null) {
       setState(() {
         _img = image;
@@ -54,7 +57,7 @@ class _SignUpState extends State<SignUp> {
       password: passwordController.text,
       username: userNameController.text,
       bio: bioController.text,
-      file: _img != null ? _img! : null,
+      file: _img,
     );
     if (res != "success") {
       if (mounted) {
@@ -88,7 +91,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Container(
           padding: MediaQuery.of(context).size.width >= webScreenSize
               ? EdgeInsets.symmetric(
@@ -99,7 +102,9 @@ class _SignUpState extends State<SignUp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(flex: 2, child: Container()),
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 10,
+              ),
               SvgPicture.asset(
                 "assets/ic_instagram.svg",
                 semanticsLabel: "Instagram logo",
@@ -115,7 +120,7 @@ class _SignUpState extends State<SignUp> {
                   _img != null
                       ? CircleAvatar(
                           radius: 64,
-                          backgroundImage: MemoryImage(_img!),
+                          backgroundImage: FileImage(File(_img!.path)),
                         )
                       : const CircleAvatar(
                           radius: 64,
@@ -179,7 +184,9 @@ class _SignUpState extends State<SignUp> {
                     : const Text("Sign up"),
               ),
               const SizedBox(height: 12),
-              Flexible(flex: 2, child: Container()),
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 10,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
