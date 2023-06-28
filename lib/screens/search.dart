@@ -11,6 +11,7 @@ import 'package:instagram_clone/resources/temporary_storage.dart';
 import 'package:instagram_clone/screens/profile.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
+import 'package:instagram_clone/widgets/image_icon_indicator.dart';
 import 'package:instagram_clone/widgets/post_card.dart';
 
 class Search extends StatefulWidget {
@@ -76,15 +77,21 @@ class _SearchState extends State<Search> {
     List<Post> list = [];
     for (var element in result.docs) {
       Post snapPost = Post.fromSnap(element);
+      List<Future<String>> futureImages = [];
+      for (var i = 0; i < snapPost.imagesUrl.length; i++) {
+        futureImages.add(
+          TemporaryStorage.getImage(
+            '$i',
+            '$tempPostImage/${snapPost.postId}',
+            snapPost.imagesUrl[i],
+          ),
+        );
+      }
       list.add(
         Post(
           uid: snapPost.uid,
           description: snapPost.description,
-          imageUrl: await TemporaryStorage.getImage(
-            '1',
-            '$tempPostImage/${snapPost.postId}',
-            snapPost.imageUrl,
-          ),
+          imagesUrl: await Future.wait(futureImages),
           datePublished: snapPost.datePublished,
           likes: snapPost.likes,
           postId: snapPost.postId,
@@ -169,53 +176,61 @@ class _SearchState extends State<Search> {
                     ],
                   ),
                   childrenDelegate: SliverChildBuilderDelegate(
-                    (context, index) => snapshot.data != null &&
-                            index < snapshot.data!.length
-                        ? InkWell(
-                            onTap: () async {
-                              Post post = snapshot.data![index];
-                              model.User postUser =
-                                  await Auth().getUserDetails(post.uid);
-                              AggregateQuerySnapshot num =
-                                  await FirebaseFirestore.instance
-                                      .collection(postsCollection)
-                                      .doc(post.postId)
-                                      .collection(commentCollection)
-                                      .count()
-                                      .get();
-                              String profilePicture =
-                                  await TemporaryStorage.getImage(
-                                postUser.uid,
-                                tempProfilePicture,
-                                postUser.getProfilePicture(),
-                              );
-                              PopulatedPost populatedPost =
-                                  PopulatedPost.fromPost(
-                                post,
-                                profilePicture,
-                                postUser.username,
-                                num.count,
-                              );
-                              if (mounted) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => Scaffold(
-                                      appBar: AppBar(
-                                        backgroundColor: mobileBackgroundColor,
-                                      ),
-                                      body: PostCard(
-                                        post: populatedPost,
-                                      ),
-                                    ),
+                    (context, index) {
+                      if (snapshot.data == null ||
+                          index >= snapshot.data!.length) {
+                        return null;
+                      }
+                      return InkWell(
+                        onTap: () async {
+                          Post post = snapshot.data![index];
+                          model.User postUser =
+                              await Auth().getUserDetails(post.uid);
+                          AggregateQuerySnapshot num = await FirebaseFirestore
+                              .instance
+                              .collection(postsCollection)
+                              .doc(post.postId)
+                              .collection(commentCollection)
+                              .count()
+                              .get();
+                          String profilePicture =
+                              await TemporaryStorage.getImage(
+                            postUser.uid,
+                            tempProfilePicture,
+                            postUser.getProfilePicture(),
+                          );
+                          PopulatedPost populatedPost = PopulatedPost.fromPost(
+                            post,
+                            profilePicture,
+                            postUser.username,
+                            num.count,
+                          );
+                          if (mounted) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => Scaffold(
+                                  appBar: AppBar(
+                                    backgroundColor: mobileBackgroundColor,
                                   ),
-                                );
-                              }
-                            },
-                            child: Image.file(
-                              File(snapshot.data![index].imageUrl),
-                            ),
-                          )
-                        : null,
+                                  body: PostCard(
+                                    post: populatedPost,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: ImageIconIndicator(
+                          image: Image.file(
+                            File(snapshot.data![index].imagesUrl.first),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          iconData: Icons.photo_library_sharp,
+                          displayIcon:
+                              snapshot.data![index].imagesUrl.length > 1,
+                        ),
+                      );
+                    },
                   ),
                 );
               },

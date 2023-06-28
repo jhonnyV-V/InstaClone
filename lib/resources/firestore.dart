@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/comment.dart';
 import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/resources/storage.dart';
@@ -11,18 +12,21 @@ class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<String> uploadPost(Uint8List image, String description) async {
+  Future<String> uploadPost(List<XFile> images, String description) async {
     String res = "some error ocurred";
     try {
       User currentUser = _auth.currentUser!;
-      String imageUrl =
-          await Storage().uploadImage(image, postStoragePath, true);
+      List<String> imagesUrl = await Storage().uploadImage(
+        images,
+        postStoragePath,
+        true,
+      );
       String postId = const Uuid().v4();
 
       Post post = Post(
         uid: currentUser.uid,
         description: description,
-        imageUrl: imageUrl,
+        imagesUrl: imagesUrl,
         datePublished: DateTime.now(),
         likes: [],
         likeCount: 0,
@@ -118,10 +122,12 @@ class FirestoreMethods {
     }
   }
 
-  Future<void> deletePost(String postid, String imageUrl) async {
+  Future<void> deletePost(String postid, List<String> imagesUrl) async {
     try {
       await _firestore.collection(postsCollection).doc(postid).delete();
-      await Storage().deleteImage(imageUrl);
+      await Future.wait(imagesUrl.map((url) {
+        return Storage().deleteImage(url);
+      }));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());

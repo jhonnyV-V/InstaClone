@@ -8,7 +8,7 @@ class PopulatedPost extends Post {
   const PopulatedPost({
     required super.uid,
     required super.description,
-    required super.imageUrl,
+    required super.imagesUrl,
     required super.datePublished,
     required super.likes,
     required super.likeCount,
@@ -22,7 +22,7 @@ class PopulatedPost extends Post {
   Map<String, dynamic> toJson() => {
         "uid": uid,
         "description": description,
-        "imageUrl": imageUrl,
+        "imagesUrl": imagesUrl,
         "datePublished": datePublished,
         "likes": likes,
         "likeCount": likeCount,
@@ -38,7 +38,7 @@ class PopulatedPost extends Post {
     return PopulatedPost(
       uid: snap['uid'],
       description: snap['description'],
-      imageUrl: snap['imageUrl'],
+      imagesUrl: snap['imagesUrl'],
       datePublished: snap['datePublished'],
       likes: snap['likes'],
       likeCount: snap['likeCount'],
@@ -58,7 +58,7 @@ class PopulatedPost extends Post {
     return PopulatedPost(
       uid: post.uid,
       description: post.description,
-      imageUrl: post.imageUrl,
+      imagesUrl: post.imagesUrl,
       datePublished: post.datePublished,
       likes: post.likes,
       likeCount: post.likeCount,

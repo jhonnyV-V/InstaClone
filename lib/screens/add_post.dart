@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/users.dart' as model;
@@ -7,6 +5,7 @@ import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
+import 'package:instagram_clone/widgets/post_preview.dart';
 import 'package:provider/provider.dart';
 
 class AddPost extends StatefulWidget {
@@ -17,52 +16,56 @@ class AddPost extends StatefulWidget {
 }
 
 class _AddPostState extends State<AddPost> {
-  Uint8List? _image;
+  List<XFile> _image = [];
   bool _isLoading = false;
   final TextEditingController description = TextEditingController();
+  final ImagePicker imagePicker = ImagePicker();
   _selectImage(BuildContext context) async {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: const Text('Create Post'),
-            children: [
-              SimpleDialogOption(
-                padding: const EdgeInsets.all(20),
-                child: const Text('Take photo'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.camera);
-                  if (file.isNotEmpty) {
-                    setState(() {
-                      _image = file;
-                    });
-                  }
-                },
-              ),
-              SimpleDialogOption(
-                padding: const EdgeInsets.all(20),
-                child: const Text('Choose from gallery'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
-                  if (file.isNotEmpty) {
-                    setState(() {
-                      _image = file;
-                    });
-                  }
-                },
-              ),
-              SimpleDialogOption(
-                padding: const EdgeInsets.all(20),
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('Create Post'),
+          children: [
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text('Take photo'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                XFile? file = await imagePicker.pickImage(
+                  source: ImageSource.camera,
+                );
+                if (file != null) {
+                  setState(() {
+                    _image = [file];
+                  });
+                }
+              },
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text('Choose from gallery'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                List<XFile> file = await imagePicker.pickMultiImage();
+                if (file.isNotEmpty) {
+                  setState(() {
+                    _image = file;
+                  });
+                }
+              },
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _createPost() async {
@@ -70,8 +73,10 @@ class _AddPostState extends State<AddPost> {
       _isLoading = true;
     });
     try {
-      String res =
-          await FirestoreMethods().uploadPost(_image!, description.text);
+      String res = await FirestoreMethods().uploadPost(
+        _image,
+        description.text,
+      );
       if (res == 'success') {
         setState(() {
           _isLoading = false;
@@ -98,7 +103,7 @@ class _AddPostState extends State<AddPost> {
 
   void clearImage() {
     setState(() {
-      _image = null;
+      _image = [];
     });
   }
 
@@ -111,7 +116,7 @@ class _AddPostState extends State<AddPost> {
   @override
   Widget build(BuildContext context) {
     final model.User user = Provider.of<UserProvider>(context).getUser;
-    if (_image == null) {
+    if (_image.isEmpty) {
       return Center(
         child: IconButton(
           icon: const Icon(Icons.upload),
@@ -141,50 +146,27 @@ class _AddPostState extends State<AddPost> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _isLoading
-              ? const LinearProgressIndicator()
-              : const SizedBox.shrink(),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(user.getProfilePicture()),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: TextField(
-                  controller: description,
-                  decoration: const InputDecoration(
-                    hintText: 'write a caption',
-                    border: InputBorder.none,
-                  ),
-                  maxLines: 8,
-                ),
-              ),
-              SizedBox(
-                height: 45,
-                width: 45,
-                child: AspectRatio(
-                  aspectRatio: 487 / 451,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: MemoryImage(_image!),
-                        fit: BoxFit.fill,
-                        alignment: FractionalOffset.topCenter,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Divider(),
-            ],
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _isLoading
+                ? const LinearProgressIndicator()
+                : const SizedBox.shrink(),
+            const Divider(),
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PostPreview(
+                  username: user.username,
+                  profileImage: user.getProfilePicture(),
+                  images: _image,
+                  descriptionController: description,
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

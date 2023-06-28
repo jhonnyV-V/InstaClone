@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:instagram_clone/models/populated_post.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
@@ -62,6 +63,32 @@ class _PostCardState extends State<PostCard> {
       }
     }
 
+    Widget displayImage() {
+      if (widget.post.imagesUrl.length > 1) {
+        return ImageSlideshow(
+          initialPage: 0,
+          indicatorColor: Colors.blue,
+          indicatorBackgroundColor: Colors.grey,
+          height: MediaQuery.of(context).size.height * 0.35,
+          width: MediaQuery.of(context).size.width,
+          children: [
+            for (String element in widget.post.imagesUrl)
+              Image.file(
+                File(element),
+                fit: BoxFit.cover,
+              ),
+          ],
+        );
+      } else {
+        return Image.file(
+          height: MediaQuery.of(context).size.height * 0.35,
+          width: MediaQuery.of(context).size.width,
+          File(widget.post.imagesUrl.first),
+          fit: BoxFit.cover,
+        );
+      }
+    }
+
     return Container(
       color: isWeb ? webBackgroundColor : mobileBackgroundColor,
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -119,7 +146,7 @@ class _PostCardState extends State<PostCard> {
                                 Navigator.of(context).pop();
                                 await FirestoreMethods().deletePost(
                                   widget.post.postId,
-                                  widget.post.imageUrl,
+                                  widget.post.imagesUrl,
                                 );
                               },
                               child: Container(
@@ -154,14 +181,7 @@ class _PostCardState extends State<PostCard> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  width: MediaQuery.of(context).size.width,
-                  child: Image.file(
-                    File(widget.post.imageUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                displayImage(),
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: isLikeAnimating ? 1 : 0,
@@ -181,6 +201,15 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
+                widget.post.imagesUrl.length > 1
+                    ? const Positioned(
+                        top: 5,
+                        right: 5,
+                        child: Icon(
+                          Icons.photo_library_sharp,
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),

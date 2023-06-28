@@ -42,15 +42,22 @@ class _FeedState extends State<Feed> {
           .count()
           .get();
 
+      List<Future<String>> futureImages = [];
+      for (var i = 0; i < data['imagesUrl']!.length; i++) {
+        futureImages.add(
+          TemporaryStorage.getImage(
+            '$i',
+            '$tempPostImage/${data['postId']}',
+            data['imagesUrl'][i],
+          ),
+        );
+      }
+
       populatedPost.add(
         PopulatedPost(
           uid: uid,
           description: data['description'],
-          imageUrl: await TemporaryStorage.getImage(
-            '1',
-            '$tempPostImage/${data['postId']}',
-            data['imageUrl'],
-          ),
+          imagesUrl: await Future.wait(futureImages),
           datePublished: data['datePublished'].toDate(),
           likes: data['likes'],
           likeCount: data['likeCount'],
@@ -89,7 +96,9 @@ class _FeedState extends State<Feed> {
             (posts) => populateUserData(posts),
           );
     }()
-        .whenComplete(() => setState(() {}));
+        .whenComplete(() {
+      setState(() {});
+    });
   }
 
   @override

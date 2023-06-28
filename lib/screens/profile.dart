@@ -17,6 +17,7 @@ import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/constants.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
+import 'package:instagram_clone/widgets/image_icon_indicator.dart';
 import 'package:instagram_clone/widgets/loader.dart';
 import 'package:instagram_clone/widgets/post_card.dart';
 import 'package:provider/provider.dart';
@@ -113,15 +114,21 @@ class _ProfileState extends State<Profile> {
     List<Post> list = [];
     for (var element in result.docs) {
       Post snapPost = Post.fromSnap(element);
+      List<Future<String>> futureImages = [];
+      for (var i = 0; i < snapPost.imagesUrl.length; i++) {
+        futureImages.add(
+          TemporaryStorage.getImage(
+            '$i',
+            '$tempPostImage/${snapPost.postId}',
+            snapPost.imagesUrl[i],
+          ),
+        );
+      }
       list.add(
         Post(
           uid: snapPost.uid,
           description: snapPost.description,
-          imageUrl: await TemporaryStorage.getImage(
-            '1',
-            '$tempPostImage/${snapPost.postId}',
-            snapPost.imageUrl,
-          ),
+          imagesUrl: await Future.wait(futureImages),
           datePublished: snapPost.datePublished,
           likes: snapPost.likes,
           postId: snapPost.postId,
@@ -150,15 +157,21 @@ class _ProfileState extends State<Profile> {
               .get();
       for (var element in result.docs) {
         Post snapPost = Post.fromSnap(element);
+        List<Future<String>> futureImages = [];
+        for (var i = 0; i < snapPost.imagesUrl.length; i++) {
+          futureImages.add(
+            TemporaryStorage.getImage(
+              '$i',
+              '$tempPostImage/${snapPost.postId}',
+              snapPost.imagesUrl[i],
+            ),
+          );
+        }
         list.add(
           Post(
             uid: snapPost.uid,
             description: snapPost.description,
-            imageUrl: await TemporaryStorage.getImage(
-              '1',
-              '$tempPostImage/${snapPost.postId}',
-              snapPost.imageUrl,
-            ),
+            imagesUrl: await Future.wait(futureImages),
             datePublished: snapPost.datePublished,
             likes: snapPost.likes,
             postId: snapPost.postId,
@@ -571,9 +584,13 @@ class _ProfileState extends State<Profile> {
           );
         }
       },
-      child: Image.file(
-        File(post.imageUrl),
-        fit: BoxFit.cover,
+      child: ImageIconIndicator(
+        image: Image.file(
+          File(post.imagesUrl.first),
+          fit: BoxFit.fitWidth,
+        ),
+        iconData: Icons.photo_library_sharp,
+        displayIcon: post.imagesUrl.length > 1,
       ),
     );
   }

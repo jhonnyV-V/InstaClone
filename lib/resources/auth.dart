@@ -1,6 +1,6 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/users.dart' as model;
 import 'package:instagram_clone/resources/storage.dart';
 import 'package:instagram_clone/utils/constants.dart';
@@ -13,7 +13,7 @@ class Auth {
     required String email,
     required String password,
     required String username,
-    Uint8List? file,
+    XFile? file,
     String bio = "",
   }) async {
     String res = "Some Error has ocurred";
@@ -25,7 +25,12 @@ class Auth {
           email: email, password: password);
       String picture = "";
       if (file != null) {
-        picture = await Storage().uploadImage(file, profilePicturesPath, false);
+        List<String> temp = await Storage().uploadImage(
+          [file],
+          profilePicturesPath,
+          false,
+        );
+        picture = temp.first;
       }
       model.User user = model.User(
         username: username,
