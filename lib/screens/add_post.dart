@@ -69,35 +69,37 @@ class _AddPostState extends State<AddPost> {
   }
 
   _createPost() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      String res = await FirestoreMethods().uploadPost(
-        _image,
-        description.text,
-      );
-      if (res == 'success') {
-        setState(() {
-          _isLoading = false;
-        });
-        clearImage();
-        if (mounted) {
-          showSnackBar('Posted', context);
-        }
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        if (mounted) {
-          showSnackBar(res, context);
-        }
-      }
-    } catch (e) {
+    if (mounted && !_isLoading) {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
-      showSnackBar(e.toString(), context);
+      try {
+        String res = await FirestoreMethods().uploadPost(
+          _image,
+          description.text,
+        );
+        if (res == 'success') {
+          setState(() {
+            _isLoading = false;
+          });
+          clearImage();
+          if (mounted) {
+            showSnackBar('Posted', context);
+          }
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          if (mounted) {
+            showSnackBar(res, context);
+          }
+        }
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar(e.toString(), context);
+      }
     }
   }
 

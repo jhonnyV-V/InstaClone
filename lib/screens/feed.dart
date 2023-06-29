@@ -53,6 +53,7 @@ class _FeedState extends State<Feed> {
         );
       }
 
+      List<dynamic> images = data['imagesUrl'];
       populatedPost.add(
         PopulatedPost(
           uid: uid,
@@ -69,6 +70,7 @@ class _FeedState extends State<Feed> {
           ),
           username: userData.username,
           numOfComments: num.count,
+          originalImagesUrl: images.cast<String>(),
         ),
       );
     }

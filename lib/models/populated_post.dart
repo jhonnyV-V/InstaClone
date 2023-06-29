@@ -5,6 +5,7 @@ class PopulatedPost extends Post {
   final String profilePicture;
   final String username;
   final int numOfComments;
+  final List<String> originalImagesUrl;
   const PopulatedPost({
     required super.uid,
     required super.description,
@@ -16,6 +17,7 @@ class PopulatedPost extends Post {
     required this.profilePicture,
     required this.username,
     required this.numOfComments,
+    required this.originalImagesUrl,
   });
 
   @override
@@ -30,6 +32,7 @@ class PopulatedPost extends Post {
         "profilePicture": profilePicture,
         "username": username,
         "numOfComments": numOfComments,
+        "originalImagesUrl": originalImagesUrl,
       };
 
   static PopulatedPost fromSnap(DocumentSnapshot snapshot) {
@@ -46,6 +49,7 @@ class PopulatedPost extends Post {
       profilePicture: snap['profilePicture'],
       username: snap['username'],
       numOfComments: snap['numOfComments'],
+      originalImagesUrl: snap['imagesUrl'],
     );
   }
 
@@ -66,6 +70,7 @@ class PopulatedPost extends Post {
       profilePicture: profilePicture,
       username: username,
       numOfComments: numOfComments,
+      originalImagesUrl: post.imagesUrl,
     );
   }
 }

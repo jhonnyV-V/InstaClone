@@ -146,7 +146,7 @@ class _PostCardState extends State<PostCard> {
                                 Navigator.of(context).pop();
                                 await FirestoreMethods().deletePost(
                                   widget.post.postId,
-                                  widget.post.imagesUrl,
+                                  widget.post.originalImagesUrl,
                                 );
                               },
                               child: Container(
