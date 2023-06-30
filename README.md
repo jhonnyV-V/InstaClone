@@ -104,6 +104,7 @@
 <!-- USAGE EXAMPLES -->
 ## Usage
 <image src="assets/instagram_clone.gif" alt="Small demo" width=300>
+<image src="assets/post_with_multiple_images.gif" alt="Muliple image post demo" width=300>
 
 <!-- ROADMAP -->
 ## Roadmap
